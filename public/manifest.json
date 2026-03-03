@@ -1,0 +1,21 @@
+{
+    "name": "Car Wash POS",
+    "short_name": "CW POS",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3b82f6",
+    "description": "Mobile-first POS for Car Wash, Polish, and Tinted shops.",
+    "icons": [
+        {
+            "src": "https://ui-avatars.com/api/?name=POS&background=3b82f6&color=fff&size=192",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://ui-avatars.com/api/?name=POS&background=3b82f6&color=fff&size=512",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
