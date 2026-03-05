@@ -27,7 +27,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /ede.posmatrix.xyz/
+          server-dir: ./
           local-dir: ./
           exclude: |
             **/.git*
@@ -37,3 +37,10 @@ jobs:
             **/.env
             **/.env.*
             **/storage/**
+            **/tests/**
+            **/phpunit.xml
+            **/.editorconfig
+            **/package*.json
+            **/vite.config.js
+            **/tailwind.config.js
+            **/postcss.config.js
