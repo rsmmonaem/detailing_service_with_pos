@@ -1,0 +1,39 @@
+name: FTP Deploy
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets present
+        run: |
+          test -n "${{ secrets.FTP_SERVER }}" || (echo "FTP_SERVER missing" && exit 1)
+          test -n "${{ secrets.FTP_USERNAME }}" || (echo "FTP_USERNAME missing" && exit 1)
+          test -n "${{ secrets.FTP_PASSWORD }}" || (echo "FTP_PASSWORD missing" && exit 1)
+
+      - name: FTP Upload
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /ede.posmatrix.xyz/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/vendor/**
+            **/.env
+            **/.env.*
+            **/storage/**
