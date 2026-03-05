@@ -51,6 +51,59 @@ class PosController extends Controller
         ]);
     }
 
+    public function suggestions(Request $request)
+    {
+        $query = $request->get('q');
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $suggestions = Sale::where('license_plate', 'like', "%{$query}%")
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('license_plate')
+            ->take(5)
+            ->map(function ($sale) {
+                return [
+                    'license_plate' => $sale->license_plate,
+                    'customer_name' => $sale->customer_name,
+                    'customer_mobile' => $sale->customer_mobile,
+                ];
+            })
+            ->values();
+
+        return response()->json($suggestions);
+    }
+
+    public function dailyReport(Request $request)
+    {
+        $date = $request->get('date', now()->toDateString());
+        $sales = Sale::whereDate('created_at', $date)->orderBy('created_at', 'asc')->get();
+        
+        $settings = [
+            'company_name' => Setting::get('company_name', 'Car Wash POS'),
+            'company_address' => Setting::get('company_address', '123 Street Name'),
+            'company_logo' => Setting::get('company_logo'),
+            'currency_symbol' => Setting::get('currency_symbol', 'RM'),
+        ];
+
+        $summary = [
+            'date' => $date,
+            'total_count' => $sales->count(),
+            'total_amount' => $sales->sum('amount'),
+            'cash_amount' => $sales->where('payment_method', 'Cash')->sum('amount'),
+            'qr_amount' => $sales->where('payment_method', 'QR')->sum('amount'),
+        ];
+
+        return view('admin.reports.pos_daily', compact('sales', 'summary', 'settings'));
+    }
+
+    public function printReceipt(Sale $sale)
+    {
+        $receipt = $this->generateReceipt($sale);
+        return view('admin.reports.pos_receipt', compact('receipt'));
+    }
+
     private function generateReceipt($sale)
     {
         $settings = [
@@ -61,6 +114,7 @@ class PosController extends Controller
         ];
 
         return [
+            'id' => $sale->id,
             'company_name' => $settings['company_name'],
             'company_address' => $settings['company_address'],
             'company_logo' => $settings['company_logo'],

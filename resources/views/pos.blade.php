@@ -99,11 +99,22 @@
                         <h1 class="text-lg font-black tracking-tight truncate max-w-[150px]">{{ $settings['company_name'] }}</h1>
                     </div>
                 </div>
-                <button @click="resetForm()" class="bg-blue-500 hover:bg-blue-400 p-2.5 rounded-xl text-sm font-medium transition duration-200 shadow-lg active:rotate-180 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                    </svg>
-                </button>
+                <div class="flex items-center space-x-2">
+                    <a href="{{ route('pos.report.daily') }}" target="_blank" class="bg-blue-500 hover:bg-blue-400 p-2.5 rounded-xl text-sm font-medium transition duration-200 shadow-lg active:scale-95" title="Daily Transaction Report">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    </a>
+                    <button @click="resetForm()" class="bg-blue-500 hover:bg-blue-400 p-2.5 rounded-xl text-sm font-medium transition duration-200 shadow-lg active:rotate-180 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-red-500/20 hover:bg-red-500/40 p-2.5 rounded-xl text-white transition duration-200 shadow-lg active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
 
@@ -134,11 +145,30 @@
                     </h2>
                     
                     <div class="space-y-4">
-                        <div>
+                        <div class="relative" @click.away="suggestions = []">
                             <label class="block text-sm font-semibold text-slate-700 mb-1">License Plate <span class="text-red-500">*</span></label>
                             <input type="text" x-model="formData.license_plate" required placeholder="ABC 1234" 
                                    class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-0 text-xl font-bold uppercase transition duration-200 placeholder-slate-400 shadow-sm"
-                                   autofocus @input="formData.license_plate = $event.target.value.toUpperCase()">
+                                   autofocus @input="fetchSuggestions(); formData.license_plate = $event.target.value.toUpperCase()"
+                                   @keydown.escape="suggestions = []">
+                            
+                            <!-- Suggestions Dropdown -->
+                            <div x-show="suggestions.length > 0" x-transition 
+                                 class="absolute z-50 left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden max-h-60 overflow-y-auto">
+                                <template x-for="s in suggestions" :key="s.license_plate">
+                                    <button type="button" @click="selectSuggestion(s)" 
+                                            class="w-full p-4 flex items-center justify-between border-b border-slate-50 hover:bg-blue-50 transition cursor-pointer text-left">
+                                        <div>
+                                            <p class="font-black text-slate-800" x-text="s.license_plate"></p>
+                                            <p class="text-xs text-slate-400" x-text="s.customer_name || 'No name recorded'"></p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-100 px-2 py-1 rounded">Return</span>
+                                            <p class="text-[10px] text-slate-400 mt-1" x-text="s.customer_mobile || ''"></p>
+                                        </div>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                         
                         <div>
@@ -438,7 +468,7 @@
 
     @push('scripts')
     <script>
-        function posForm(initialServices, initialQr) {
+        window.posForm = function(initialServices, initialQr) {
             return {
                 step: 1,
                 loading: false,
@@ -448,6 +478,7 @@
                 showMoreFields: false,
                 services: initialServices || [],
                 activeQr: initialQr,
+                suggestions: [],
                 formData: {
                     license_plate: '',
                     customer_mobile: '',
@@ -458,6 +489,28 @@
                     payment_method: ''
                 },
                 receiptData: {},
+
+                async fetchSuggestions() {
+                    const q = this.formData.license_plate;
+                    if (q.length < 2) {
+                        this.suggestions = [];
+                        return;
+                    }
+                    try {
+                        const res = await fetch(`/pos/suggestions?q=${encodeURIComponent(q)}`);
+                        this.suggestions = await res.json();
+                    } catch (e) {
+                        console.error('Suggestions fetch error:', e);
+                    }
+                },
+
+                selectSuggestion(s) {
+                    this.formData.license_plate = s.license_plate;
+                    this.formData.customer_name = s.customer_name || '';
+                    this.formData.customer_mobile = s.customer_mobile || '';
+                    this.suggestions = [];
+                    if (this.formData.customer_name) this.showMoreFields = true;
+                },
                 
                 resetForm() {
                     this.formData = {
@@ -515,7 +568,13 @@
                 },
 
                 printReceipt() {
-                    window.print();
+                    if (this.receiptData && this.receiptData.id) {
+                        const printUrl = `/pos/print/${this.receiptData.id}`;
+                        window.open(printUrl, '_blank');
+                    } else {
+                        // Fallback to current behavior if ID is missing for some reason
+                        window.print();
+                    }
                 }
             }
         }
