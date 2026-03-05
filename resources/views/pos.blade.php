@@ -82,7 +82,7 @@
         </div>
 
         <!-- Header -->
-        <header class="bg-blue-600 text-white p-4 sticky top-0 z-10 shadow-md">
+        <header class="bg-blue-600 text-white p-4 sticky top-0 z-10 shadow-md no-print">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <button @click="sidebarOpen = true" class="p-1 hover:bg-blue-500 rounded-lg transition active:scale-95">
@@ -108,7 +108,7 @@
         </header>
 
         <!-- POS Form Flow -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+        <div class="flex-1 overflow-y-auto p-4 space-y-6 no-print">
             <!-- Step Indicators -->
             <div class="flex justify-between items-center px-4">
                 <template x-for="i in 3" :key="i">
@@ -359,7 +359,7 @@
                  x-transition:enter="transition ease-out duration-300 transform scale-95" x-transition:enter-start="scale-95 opacity-0" x-transition:enter-end="scale-100 opacity-100">
                 
                 <!-- Confetti/Success Header -->
-                <div class="bg-green-600 p-6 text-white text-center relative overflow-hidden">
+                <div class="bg-green-600 p-6 text-white text-center relative overflow-hidden modal-header">
                     <div class="absolute -right-6 -top-6 rotate-12 opacity-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
@@ -515,44 +515,7 @@
                 },
 
                 printReceipt() {
-                    const content = document.getElementById('receipt-print').outerHTML;
-                    const iframe = document.getElementById('print-iframe');
-                    const pri = iframe.contentWindow;
-                    
-                    pri.document.open();
-                    pri.document.write(`
-                        <html>
-                            <head>
-                                <style>
-                                    @page { size: 58mm 200mm; margin: 0; }
-                                    body { font-family: 'Courier New', Courier, monospace; margin: 0; padding: 5mm; }
-                                    #receipt-print { width: 48mm; color: black; font-size: 10px; }
-                                    .text-center { text-align: center; }
-                                    .flex { display: flex; }
-                                    .justify-between { justify-content: space-between; }
-                                    .font-bold { font-weight: bold; }
-                                    .font-black { font-weight: 900; }
-                                    .uppercase { text-transform: uppercase; }
-                                    .italic { font-style: italic; }
-                                    .my-2 { margin-top: 8px; margin-bottom: 8px; }
-                                    .mt-6 { margin-top: 24px; }
-                                    .border-b { border-bottom: 1px dashed #000; }
-                                    .text-lg { font-size: 14px; }
-                                    .text-base { font-size: 12px; }
-                                    .text-sm { font-size: 10px; }
-                                    .text-xs { font-size: 8px; }
-                                     img { max-width: 30mm; height: auto; display: block; margin: 0 auto; background: white; }
-                                </style>
-                            </head>
-                            <body>${content}</body>
-                        </html>
-                    `);
-                    pri.document.close();
-                    
-                    setTimeout(() => {
-                        pri.focus();
-                        pri.print();
-                    }, 500);
+                    window.print();
                 }
             }
         }
@@ -570,6 +533,36 @@
         }
         ::-webkit-scrollbar-track {
             background: transparent;
+        }
+
+        @media print {
+            .no-print, header, footer, aside, nav, button, .modal-header {
+                display: none !important;
+            }
+            body, main {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #receipt-print {
+                border: none !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                max-width: 57mm !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                font-family: monospace !important;
+                font-size: 10px !important;
+                display: block !important;
+            }
+            #receipt-print h3 { font-size: 14px !important; }
+            #receipt-print .bg-blue-50 { background: transparent !important; color: black !important; border-top: 1px dashed black !important; border-bottom: 1px dashed black !important; margin: 10px 0 !important; padding: 10px 0 !important; }
+            #receipt-print .text-slate-500, #receipt-print .text-slate-400 { color: black !important; }
+
+            /* Modal overrides to show content only */
+            .fixed.inset-0 { position: static !important; display: block !important; background: transparent !important; padding: 0 !important; backdrop-filter: none !important; }
+            .bg-white.rounded-3xl.w-full.max-w-sm { max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
+            .p-6.overflow-y-auto { background: transparent !important; padding: 0 !important; max-height: none !important; overflow: visible !important; }
         }
     </style>
 </x-app-layout>

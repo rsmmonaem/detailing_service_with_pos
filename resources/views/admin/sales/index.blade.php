@@ -4,45 +4,39 @@
         sale: null,
         settings: {{ json_encode($settings) }},
         printInvoice() {
-            const content = document.getElementById('receipt-print').outerHTML;
-            const iframe = document.getElementById('print-iframe');
-            const pri = iframe.contentWindow;
-            pri.document.open();
-            pri.document.write(`
-                <html>
-                    <head>
-                        <style>
-                            @page { size: 58mm 200mm; margin: 0; }
-                            body { font-family: 'Courier New', Courier, monospace; margin: 0; padding: 5mm; }
-                            #receipt-print { width: 48mm; color: black; font-size: 10px; }
-                            .text-center { text-align: center; }
-                            .flex { display: flex; }
-                            .justify-between { justify-content: space-between; }
-                            .font-bold { font-weight: bold; }
-                            .font-black { font-weight: 900; }
-                            .uppercase { text-transform: uppercase; }
-                            .italic { font-style: italic; }
-                            .my-2 { margin-top: 8px; margin-bottom: 8px; }
-                            .mt-6 { margin-top: 24px; }
-                            .border-b { border-bottom: 1px dashed #000; }
-                            .text-lg { font-size: 14px; }
-                            .text-base { font-size: 12px; }
-                            .text-sm { font-size: 10px; }
-                            .text-xs { font-size: 8px; }
-                            img { max-width: 30mm; height: auto; display: block; margin: 0 auto; background: white; }
-                        </style>
-                    </head>
-                    <body>${content}</body>
-                </html>
-            `);
-            pri.document.close();
-            setTimeout(() => { pri.focus(); pri.print(); }, 500);
+            window.print();
         }
     }">
+
+    <style>
+        @media print {
+            .no-print, aside, header, nav, button, .modal-header { display: none !important; }
+            body, main { background: white !important; padding: 0 !important; margin: 0 !important; }
+            #receipt-print { 
+                border: none !important; 
+                box-shadow: none !important; 
+                width: 100% !important; 
+                max-width: 57mm !important; 
+                margin: 0 auto !important; 
+                padding: 0 !important; 
+                font-family: monospace !important; 
+                font-size: 10px !important; 
+                display: block !important;
+            }
+            #receipt-print h3 { font-size: 14px !important; }
+            #receipt-print .bg-blue-50 { background: transparent !important; color: black !important; border-top: 1px dashed black !important; border-bottom: 1px dashed black !important; margin: 10px 0 !important; padding: 10px 0 !important; }
+            #receipt-print .text-slate-500, #receipt-print .text-slate-400 { color: black !important; }
+            
+            /* Modal overrides to show content only */
+            .fixed.inset-0 { position: static !important; display: block !important; background: transparent !important; padding: 0 !important; backdrop-filter: none !important; }
+            .bg-white.rounded-3xl.w-full.max-w-sm { max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
+            .p-6.bg-slate-100 { background: transparent !important; padding: 0 !important; max-height: none !important; overflow: visible !important; }
+        }
+    </style>
     @section('title', 'Sales History')
 
     <!-- Filters -->
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8">
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8 no-print">
         <form action="{{ route('admin.sales.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1">Start Date</label>
@@ -71,7 +65,7 @@
     </div>
 
     <!-- Sales Table -->
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden no-print">
         <div class="p-6 border-b border-slate-100 flex justify-between items-center">
             <h3 class="font-bold text-slate-800">All Transactions</h3>
             <a href="{{ route('admin.sales.export', request()->all()) }}" class="flex items-center text-sm font-bold text-green-600 hover:text-green-700 bg-green-50 px-4 py-2 rounded-lg transition">
@@ -142,7 +136,7 @@
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden flex flex-col shadow-2xl relative"
              x-transition:enter="transition ease-out duration-300 transform scale-95" x-transition:enter-start="scale-95 opacity-0" x-transition:enter-end="scale-100 opacity-100">
             
-            <div class="p-4 border-b flex justify-between items-center bg-slate-50">
+            <div class="p-4 border-b flex justify-between items-center bg-slate-50 modal-header">
                 <h3 class="font-bold text-slate-800">Review Invoice</h3>
                 <button @click="showModal = false" class="text-slate-400 hover:text-slate-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18" /></svg>
