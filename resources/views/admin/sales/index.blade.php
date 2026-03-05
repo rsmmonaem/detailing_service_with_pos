@@ -4,7 +4,11 @@
         sale: null,
         settings: {{ json_encode($settings) }},
         printInvoice() {
-            window.print();
+            if (this.sale && this.sale.id) {
+                window.open(`/pos/print/${this.sale.id}`, '_blank');
+            } else {
+                window.print();
+            }
         }
     }">
 
