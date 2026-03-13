@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div x-data="posForm({{ $services->toJson() }}, {{ $activeQr ? $activeQr->toJson() : 'null' }})" 
+    <div x-data="posForm({{ $services->toJson() }}, {{ $activeQr ? $activeQr->toJson() : 'null' }}, {{ $todaySales->toJson() }}, {{ json_encode($settings) }})" 
          class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col relative overflow-hidden">
         
         <!-- Sidebar (Drawer) -->
@@ -44,27 +44,35 @@
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto bg-slate-50">
                 <p class="text-[10px] font-black uppercase text-slate-400 px-3 mb-2 tracking-widest">Navigation</p>
                 
+                @can('use_pos')
                 <a href="{{ route('pos.index') }}" class="flex items-center space-x-3 p-3 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-100 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                     <span class="font-bold">POS Terminal</span>
                 </a>
+                @endcan
 
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 p-3 rounded-xl text-slate-600 hover:bg-slate-200 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                     <span class="font-bold">Admin Panel</span>
                 </a>
 
+                @can('view_sales')
                 <a href="{{ route('admin.sales.index') }}" class="flex items-center space-x-3 p-3 rounded-xl text-slate-600 hover:bg-slate-200 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <span class="font-bold">Sales History</span>
                 </a>
+                @endcan
 
+                @if(auth()->user()->can('manage_services') || auth()->user()->can('manage_settings'))
                 <div class="pt-4 mt-4 border-t border-slate-200">
                     <p class="text-[10px] font-black uppercase text-slate-400 px-3 mb-2 tracking-widest">Configuration</p>
+                    @can('manage_services')
                     <a href="{{ route('admin.services.index') }}" class="flex items-center space-x-3 p-3 rounded-xl text-slate-600 hover:bg-slate-200 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                         <span class="font-bold">Manage Services</span>
                     </a>
+                    @endcan
+                    @can('manage_settings')
                     <a href="{{ route('admin.qr_codes.index') }}" class="flex items-center space-x-3 p-3 rounded-xl text-slate-600 hover:bg-slate-200 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
                         <span class="font-bold">QR Code Setup</span>
@@ -73,11 +81,65 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span class="font-bold">Store Settings</span>
                     </a>
+                    @endcan
                 </div>
+                @endif
+
+                @can('view_sales')
+                <div class="pt-6 mt-6 border-t border-slate-200">
+                    <div class="flex items-center justify-between px-3 mb-4">
+                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Today's Sales</p>
+                        <span class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[9px] font-black rounded-full" x-text="todaySales.length"></span>
+                    </div>
+                    
+                    <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        <template x-for="sale in todaySales" :key="sale.id">
+                            <button @click="viewSaleReceipt(sale)" 
+                                    class="w-full text-left p-3.5 rounded-2xl bg-white border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300 group">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex flex-col">
+                                        <span class="font-black text-slate-900 text-sm tracking-tight group-hover:text-blue-600 transition-colors" x-text="sale.license_plate"></span>
+                                        <span class="text-[9px] font-bold text-slate-400 flex items-center mt-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            <span x-text="new Date(sale.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
+                                        </span>
+                                    </div>
+                                    <span class="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg" x-text="'{{ $settings['currency_symbol'] }}' + Number(sale.amount).toFixed(2)"></span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md" x-text="sale.service_type"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-tighter text-slate-300 group-hover:text-blue-400 transition-colors">Re-Print</span>
+                                </div>
+                            </button>
+                        </template>
+                        
+                        <template x-if="todaySales.length === 0">
+                            <div class="py-10 text-center">
+                                <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                </div>
+                                <p class="text-xs text-slate-400 font-bold">No sales yet today</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                @endcan
             </nav>
 
-            <div class="p-4 border-t border-slate-100 text-center">
-                <p class="text-[10px] text-slate-400 font-medium">© 2026 DeepMind Labs</p>
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-600">Auto-Print</span>
+                    <button @click="autoPrint = !autoPrint" 
+                            :class="autoPrint ? 'bg-blue-600' : 'bg-slate-300'"
+                            class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none">
+                        <span :class="autoPrint ? 'translate-x-5' : 'translate-x-0'"
+                              class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-white text-center">
+                <p class="text-[10px] text-slate-400 font-medium">All Rights Reserved © NIBiz Soft 2006 - 2026</p>
             </div>
         </div>
 
@@ -100,9 +162,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
+                    @can('view_sales')
                     <a href="{{ route('pos.report.daily') }}" target="_blank" class="bg-blue-500 hover:bg-blue-400 p-2.5 rounded-xl text-sm font-medium transition duration-200 shadow-lg active:scale-95" title="Daily Transaction Report">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 00-2-2V5a2 2 0 002-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     </a>
+                    @endcan
                     <button @click="resetForm()" class="bg-blue-500 hover:bg-blue-400 p-2.5 rounded-xl text-sm font-medium transition duration-200 shadow-lg active:rotate-180 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
@@ -401,7 +465,7 @@
 
                 <div class="p-6 overflow-y-auto max-h-[60vh] flex-1 bg-slate-50">
                     <!-- Thermal Receipt Paper -->
-                    <div id="receipt-print" class="bg-white p-6 shadow-sm mx-auto w-full max-w-[280px] font-mono text-[11px] leading-tight text-black border-t-4 border-slate-200">
+                    <div id="receipt-print" class="bg-white p-[4.5mm] shadow-sm mx-auto w-full max-w-[57mm] font-mono text-[11px] leading-tight text-black border-t-4 border-slate-200">
                         <div class="text-center mb-4">
                              @if($settings['company_logo'])
                                 <img src="{{ asset('storage/' . $settings['company_logo']) }}" alt="Logo" class="h-12 w-12 mx-auto mb-2 object-contain">
@@ -466,9 +530,76 @@
         <iframe id="print-iframe" class="hidden"></iframe>
     </div>
 
+    @push('styles')
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Custom scrollbar for mobile feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        @media print {
+            .no-print, header, footer, aside, nav, button, .modal-header {
+                display: none !important;
+            }
+            body, main {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 57mm !important;
+            }
+            @media print {
+                @page { margin: 0; size: 57mm auto; }
+            }
+            #receipt-print {
+                border: none !important;
+                box-shadow: none !important;
+                width: 57mm !important;
+                max-width: 57mm !important;
+                margin: 0 auto !important;
+                padding: 2mm 4.5mm !important;
+                box-sizing: border-box !important;
+                font-family: monospace !important;
+                font-size: 10px !important;
+                display: block !important;
+                background: white !important;
+            }
+            #receipt-print h3 { font-size: 14px !important; }
+            #receipt-print .bg-blue-50 { background: transparent !important; color: black !important; border-top: 1px dashed black !important; border-bottom: 1px dashed black !important; margin: 10px 0 !important; padding: 10px 0 !important; }
+            #receipt-print .text-slate-500, #receipt-print .text-slate-400 { color: black !important; }
+
+            /* Modal overrides to show content only */
+            .fixed.inset-0 { position: static !important; display: block !important; background: transparent !important; padding: 0 !important; backdrop-filter: none !important; }
+            .bg-white.rounded-3xl.w-full.max-w-sm { max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
+            .p-6.overflow-y-auto { background: transparent !important; padding: 0 !important; max-height: none !important; overflow: visible !important; }
+        }
+    </style>
+    @endpush
+
     @push('scripts')
     <script>
-        window.posForm = function(initialServices, initialQr) {
+        window.posForm = function(initialServices, initialQr, initialTodaySales, companySettings) {
             return {
                 step: 1,
                 loading: false,
@@ -478,7 +609,10 @@
                 showMoreFields: false,
                 services: initialServices || [],
                 activeQr: initialQr,
+                settings: companySettings || {},
+                todaySales: initialTodaySales || [],
                 suggestions: [],
+                autoPrint: true, // Default to true for POS devices
                 formData: {
                     license_plate: '',
                     customer_mobile: '',
@@ -554,8 +688,14 @@
 
                         if (result.success) {
                             this.receiptData = result.receipt;
-                            this.receiptData.customer_name = this.formData.customer_name; // Since it might not be in DB return
+                            this.receiptData.customer_name = this.formData.customer_name; 
+                            this.todaySales.unshift(result.sale); // Add to history
                             this.showReceipt = true;
+
+                            // Auto-print if enabled
+                            if (this.autoPrint) {
+                                setTimeout(() => this.printReceipt(), 500);
+                            }
                         } else {
                             alert('Error: ' + result.message);
                         }
@@ -567,61 +707,60 @@
                     }
                 },
 
-                printReceipt() {
-                    if (this.receiptData && this.receiptData.id) {
-                        const printUrl = `/pos/print/${this.receiptData.id}`;
-                        window.open(printUrl, '_blank');
-                    } else {
-                        // Fallback to current behavior if ID is missing for some reason
+                async printReceipt() {
+                    if (!this.receiptData || !this.receiptData.id) {
                         window.print();
+                        return;
                     }
+
+                    const printUrl = `/pos/print/${this.receiptData.id}`;
+                    const absoluteUrl = window.location.origin + printUrl;
+
+                    // Attempt Silent Print via RawBT (Android Bridge)
+                    try {
+                        // Use a timeout to avoid waiting too long for a local server that's not there
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+                        console.log('Attempting RawBT Silent Print...');
+                        const response = await fetch(`http://localhost:40213/print?url=${encodeURIComponent(absoluteUrl)}`, {
+                            method: 'GET',
+                            signal: controller.signal,
+                            mode: 'no-cors' // Allows sending to localhost even from different origin
+                        });
+                        
+                        // If we got here without error, RawBT received the signal
+                        console.log('RawBT silent print signal sent successfully.');
+                        clearTimeout(timeoutId);
+                        return; // Success
+                    } catch (error) {
+                        console.warn('RawBT not available or failed:', error);
+                        // Fallback: Open standard print window
+                        window.open(printUrl, '_blank');
+                    }
+                },
+
+                viewSaleReceipt(sale) {
+                    // Prepare receipt data format
+                    this.receiptData = {
+                        id: sale.id,
+                        company_name: this.settings.company_name,
+                        company_address: this.settings.company_address,
+                        company_logo: this.settings.company_logo,
+                        currency_symbol: this.settings.currency_symbol,
+                        date: new Date(sale.created_at).toLocaleString(),
+                        license_plate: sale.license_plate,
+                        service_type: sale.service_type,
+                        amount: sale.amount,
+                        payment_method: sale.payment_method,
+                        customer_mobile: sale.customer_mobile,
+                        customer_name: sale.customer_name,
+                    };
+                    this.showReceipt = true;
+                    this.sidebarOpen = false;
                 }
             }
         }
     </script>
     @endpush
-
-    <style>
-        /* Custom scrollbar for mobile feel */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        @media print {
-            .no-print, header, footer, aside, nav, button, .modal-header {
-                display: none !important;
-            }
-            body, main {
-                background: white !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            #receipt-print {
-                border: none !important;
-                box-shadow: none !important;
-                width: 100% !important;
-                max-width: 57mm !important;
-                margin: 0 auto !important;
-                padding: 0 !important;
-                font-family: monospace !important;
-                font-size: 10px !important;
-                display: block !important;
-            }
-            #receipt-print h3 { font-size: 14px !important; }
-            #receipt-print .bg-blue-50 { background: transparent !important; color: black !important; border-top: 1px dashed black !important; border-bottom: 1px dashed black !important; margin: 10px 0 !important; padding: 10px 0 !important; }
-            #receipt-print .text-slate-500, #receipt-print .text-slate-400 { color: black !important; }
-
-            /* Modal overrides to show content only */
-            .fixed.inset-0 { position: static !important; display: block !important; background: transparent !important; padding: 0 !important; backdrop-filter: none !important; }
-            .bg-white.rounded-3xl.w-full.max-w-sm { max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important; }
-            .p-6.overflow-y-auto { background: transparent !important; padding: 0 !important; max-height: none !important; overflow: visible !important; }
-        }
-    </style>
 </x-app-layout>

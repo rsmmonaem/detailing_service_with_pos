@@ -1,6 +1,7 @@
 <x-admin-layout>
     @section('title', 'Dashboard Overview')
 
+    @can('view_sales')
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <!-- Daily Sales -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center">
@@ -16,7 +17,7 @@
         <!-- Weekly Sales -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center">
             <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
             </div>
             <div>
                 <p class="text-slate-500 text-sm font-medium">Weekly Sales</p>
@@ -88,29 +89,66 @@
             </div>
         </div>
     </div>
+    @endcan
 
     <!-- Quick Actions -->
     <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-        <h4 class="text-lg font-bold text-slate-800 mb-6">Reports & Actions</h4>
+        <h4 class="text-lg font-bold text-slate-800 mb-6 font-display tracking-tight flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+            Reports & Actions
+        </h4>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-             <a href="{{ route('admin.reports.daily') }}" class="p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition group">
-                <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center mb-3 shadow-sm text-blue-600 group-hover:scale-110 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+            @can('view_sales')
+             <a href="{{ route('admin.reports.daily') }}" class="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-white hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 group">
+                <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm text-blue-600 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                 </div>
-                <p class="font-bold text-slate-800">Daily Summary</p>
-                <p class="text-xs text-slate-500 mt-1">Print today's report</p>
+                <p class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Daily Summary</p>
+                <p class="text-[11px] text-slate-500 font-medium mt-1 uppercase tracking-wider">Print records</p>
             </a>
 
-             <a href="{{ route('admin.sales.export') }}" class="p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-green-200 hover:bg-green-50 transition group">
-                <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center mb-3 shadow-sm text-green-600 group-hover:scale-110 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+             <a href="{{ route('admin.sales.export') }}" class="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:bg-white hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 group">
+                <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm text-emerald-600 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 </div>
-                <p class="font-bold text-slate-800">Export Sales</p>
-                <p class="text-xs text-slate-500 mt-1">Download CSV records</p>
+                <p class="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">Export Sales</p>
+                <p class="text-[11px] text-slate-500 font-medium mt-1 uppercase tracking-wider">Download CSV</p>
             </a>
+            @endcan
+
+            @can('manage_users')
+            <a href="{{ route('admin.users.index') }}" class="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-purple-200 hover:bg-white hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300 group">
+                <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm text-purple-600 group-hover:scale-110 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197" /></svg>
+                </div>
+                <p class="font-bold text-slate-800 group-hover:text-purple-600 transition-colors">Manage Users</p>
+                <p class="text-[11px] text-slate-500 font-medium mt-1 uppercase tracking-wider">Admin access</p>
+            </a>
+            @endcan
+
+            @can('manage_services')
+            <a href="{{ route('admin.services.index') }}" class="p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-orange-200 hover:bg-white hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 group">
+                <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm text-orange-600 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                </div>
+                <p class="font-bold text-slate-800 group-hover:text-orange-600 transition-colors">Manage Services</p>
+                <p class="text-[11px] text-slate-500 font-medium mt-1 uppercase tracking-wider">Price list</p>
+            </a>
+            @endcan
         </div>
+
+        @if(!auth()->user()->can('view_sales') && !auth()->user()->can('manage_users') && !auth()->user()->can('manage_services'))
+            <div class="p-10 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Welcome, {{ auth()->user()->name }}</h3>
+                <p class="text-slate-500 max-w-md mx-auto">You have successfully logged in. Please use the sidebar to navigate the system based on your assigned permissions.</p>
+            </div>
+        @endif
     </div>
 
+    @can('view_sales')
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -119,8 +157,8 @@
             
             // Create gradient
             const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.005)');
+            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.3)');
+            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.01)');
 
             new Chart(ctx, {
                 type: 'line',
@@ -201,4 +239,5 @@
         });
     </script>
     @endpush
+    @endcan
 </x-admin-layout>

@@ -22,8 +22,11 @@ class PosController extends Controller
         
         $services = Service::where('is_active', true)->orderBy('name')->get();
         $activeQr = QrCode::where('is_active', true)->first();
+        $todaySales = Sale::whereDate('created_at', now()->toDateString())
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('pos', compact('settings', 'services', 'activeQr'));
+        return view('pos', compact('settings', 'services', 'activeQr', 'todaySales'));
     }
 
     public function store(Request $request)

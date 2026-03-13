@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Salary Sheet - N. I. Biz Soft</title>
+    <!-- Simple Bootstrap for Layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            font-family: 'Times New Roman', Times, serif;
+            /* Formal serif for reports */
+            padding-top: 20px;
+        }
+
+        .report-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .report-header h1 {
+            font-weight: bold;
+            margin-bottom: 0;
+            text-transform: uppercase;
+        }
+
+        .report-section-title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Clean inputs that look like underlined blanks */
+        .underline-input {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 2px 5px;
+            outline: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        .table-salary {
+            border: 1px solid #000 !important;
+        }
+
+        .table-salary th,
+        .table-salary td {
+            border: 1px solid #000 !important;
+            padding: 8px !important;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .table-salary th {
+            background-color: #f2f2f2 !important;
+            print-color-adjust: exact;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #eee !important;
+        }
+
+        .btn-print {
+            background-color: #333;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                padding-top: 0;
+            }
+
+            .underline-input {
+                border-bottom: none !important;
+                /* Keep it clean for print if preferred, but usually underline is better if hand-signed */
+            }
+
+            /* Ensure borders are visible in all browsers */
+            .table-salary th,
+            .table-salary td {
+                border: 1px solid #000 !important;
+            }
+        }
+
+        .signature-area {
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sig-line {
+            border-top: 1px solid #000;
+            width: 200px;
+            text-align: center;
+            padding-top: 5px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" style="max-width: 950px;">
+
+        <!-- Report Header -->
+        <div class="report-header">
+            <h1>N. I. Biz Soft</h1>
+            <p class="mb-0">EMPLOYEE SALARY STATEMENT</p>
+        </div>
+
+        <!-- Top Info Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label class="small fw-bold">FOR THE MONTH OF:</label>
+                <select id="month" class="underline-input">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold">YEAR:</label>
+                <input type="number" id="year" class="underline-input">
+            </div>
+            <div class="col-md-5 text-md-end">
+                <label class="small fw-bold">PREPARED DATE:</label>
+                <input type="date" id="date" class="underline-input" style="width: auto;">
+            </div>
+        </div>
+
+        <!-- Employee Information -->
+        <div class="report-section-title">EMPLOYEE DETAILS</div>
+        <div class="row g-3 mb-5 text-uppercase">
+            <div class="col-md-4">
+                <label class="small fw-bold">NAME:</label>
+                <input type="text" class="underline-input">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">DESIGNATION:</label>
+                <input type="text" class="underline-input">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">ID NO:</label>
+                <input type="text" class="underline-input">
+            </div>
+        </div>
+
+        <!-- Salary Breakdown Table -->
+        <div class="report-section-title">SALARY BREAKDOWN</div>
+        <div class="table-responsive">
+            <table class="table table-salary">
+                <thead>
+                    <tr>
+                        <th colspan="4">EARNINGS</th>
+                        <th colspan="8">DEDUCTIONS</th>
+                        <th rowspan="2" class="align-middle">NET PAYABLE</th>
+                    </tr>
+                    <tr>
+                        <th>BASIC</th>
+                        <th>OT</th>
+                        <th>BONUS</th>
+                        <th class="total-row">GROSS</th>
+
+                        <th>ABS DAYS</th>
+                        <th>ABS AMT</th>
+                        <th>LUNCH</th>
+                        <th>L/DED.</th>
+                        <th>LATE DAYS</th>
+                        <th>L/AMT</th>
+                        <th>ADVANCE</th>
+                        <th class="total-row">TOTAL DED.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="number" id="basic" class="text-center w-100 border-0" value="20000"></td>
+                        <td><input type="number" id="otsalary" class="text-center w-100 border-0" value="0"></td>
+                        <td><input type="number" id="bonus" class="text-center w-100 border-0" value="10000"></td>
+                        <td id="totalPay" class="fw-bold">0.00</td>
+
+                        <td><input type="number" id="absentDays" class="text-center w-100 border-0" value="0"></td>
+                        <td id="absentAmount" class="small">0.00</td>
+                        <td><input type="number" id="lunch" class="text-center w-100 border-0" value="3000"></td>
+                        <td id="lunchDeduction" class="small">0.00</td>
+                        <td><input type="number" id="lateDays" class="text-center w-100 border-0" value="0"></td>
+                        <td id="lateAmount" class="small">0.00</td>
+                        <td><input type="number" id="advance" class="text-center w-100 border-0" value="0"></td>
+                        <td id="totalDeduction" class="fw-bold">0.00</td>
+
+                        <td id="takeHome" class="fw-bold h5">0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Totals & Signatures -->
+        <div class="row mt-4">
+            <div class="col-8">
+                <p class="small">* Note: Salary per day is calculated based on total days in the month.</p>
+            </div>
+            <div class="col-4 text-end">
+                <div class="p-2 border border-dark rounded">
+                    <span class="small fw-bold">TOTAL TAKE HOME:</span><br>
+                    <span id="finalTotalDisplay" class="h4 fw-bold">0.00 BDT</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="signature-area">
+            <div class="sig-line">Employee Signature</div>
+            <div class="sig-line">Project Manager</div>
+            <div class="sig-line">Managing Director</div>
+        </div>
+
+        <div class="text-center mt-5 no-print">
+            <button class="btn btn-print mb-4" onclick="window.print()">PRINT REPORT</button>
+        </div>
+
+    </div>
+
+    <script>
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function calculate() {
+            let basic = Number(document.getElementById("basic").value) || 0;
+            let otsalary = Number(document.getElementById("otsalary").value) || 0;
+            let bonus = Number(document.getElementById("bonus").value) || 0;
+            let absentDays = Number(document.getElementById("absentDays").value) || 0;
+            let lunch = Number(document.getElementById("lunch").value) || 0;
+            let lateDays = Number(document.getElementById("lateDays").value) || 0;
+            let advance = Number(document.getElementById("advance").value) || 0;
+
+            let month = Number(document.getElementById("month").value);
+            let year = Number(document.getElementById("year").value) || new Date().getFullYear();
+
+            let totalDays = getDaysInMonth(month, year);
+
+            // Earnings
+            let totalPay = basic + otsalary + bonus;
+            document.getElementById("totalPay").innerText = totalPay.toFixed(2);
+
+            // Per Day Salary
+            let perDay = totalPay / totalDays;
+
+            // Absent Deduction
+            let absentAmount = perDay * absentDays;
+            document.getElementById("absentAmount").innerText = absentAmount.toFixed(2);
+
+            // Lunch Calculation
+            let lunchPerDay = lunch / totalDays;
+            let lunchDeduction = lunchPerDay * (totalDays - absentDays);
+            document.getElementById("lunchDeduction").innerText = lunchDeduction.toFixed(2);
+
+            // Late Deduction: 1 day salary for every 3 late days
+            let lateDeductionDays = Math.floor(lateDays / 3);
+            let lateAmount = perDay * lateDeductionDays;
+            document.getElementById("lateAmount").innerText = lateAmount.toFixed(2);
+
+            // Deductions
+            let totalDeduction = absentAmount + lunchDeduction + lateAmount + advance;
+            document.getElementById("totalDeduction").innerText = totalDeduction.toFixed(2);
+
+            // Net Home
+            let takeHome = totalPay - totalDeduction;
+            document.getElementById("takeHome").innerText = takeHome.toFixed(2);
+            document.getElementById("finalTotalDisplay").innerText = takeHome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " BDT";
+        }
+
+        document.querySelectorAll("input, select").forEach(el => {
+            el.addEventListener("input", calculate);
+        });
+
+        window.addEventListener('load', () => {
+            let today = new Date();
+            document.getElementById("date").valueAsDate = today;
+            document.getElementById("year").value = today.getFullYear();
+            document.getElementById("month").value = today.getMonth();
+            calculate();
+        });
+    </script>
+
+</body>
+
+</html>

@@ -15,14 +15,16 @@
     <style>
         @media print {
             .no-print, aside, header, nav, button, .modal-header { display: none !important; }
-            body, main { background: white !important; padding: 0 !important; margin: 0 !important; }
+            body, main { background: white !important; padding: 0 !important; margin: 0 !important; width: 57mm !important; }
+            @page { margin: 0; size: 57mm auto; }
             #receipt-print { 
                 border: none !important; 
                 box-shadow: none !important; 
-                width: 100% !important; 
+                width: 57mm !important; 
                 max-width: 57mm !important; 
                 margin: 0 auto !important; 
-                padding: 0 !important; 
+                padding: 2mm 4.5mm !important; 
+                box-sizing: border-box !important;
                 font-family: monospace !important; 
                 font-size: 10px !important; 
                 display: block !important;
@@ -148,7 +150,7 @@
             </div>
 
             <div class="p-6 bg-slate-100 overflow-y-auto max-h-[70vh]">
-                <div id="receipt-print" class="bg-white p-6 shadow-sm mx-auto w-full max-w-[280px] font-mono text-[11px] leading-tight text-black border-t-4 border-slate-200" x-if="sale">
+                <div id="receipt-print" class="bg-white p-[4.5mm] shadow-sm mx-auto w-full max-w-[57mm] font-mono text-[11px] leading-tight text-black border-t-4 border-slate-200" x-if="sale">
                     <div class="text-center mb-4">
                          <template x-if="settings.company_logo">
                             <img :src="'/storage/' + settings.company_logo" alt="Logo" class="h-12 w-12 mx-auto mb-2 object-contain">

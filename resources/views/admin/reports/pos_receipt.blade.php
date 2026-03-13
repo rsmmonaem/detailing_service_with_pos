@@ -10,8 +10,9 @@
             font-size: 12px;
             line-height: 1.2;
             margin: 0;
-            padding: 10px;
-            width: 58mm;
+            padding: 2mm 4.5mm;
+            width: 57mm;
+            box-sizing: border-box;
             background: #fff;
             color: #000;
         }
@@ -51,8 +52,8 @@
             font-size: 10px;
         }
         @media print {
-            body { padding: 0; }
-            @page { margin: 0; size: 58mm auto; }
+            body { padding: 2mm 4.5mm; width: 57mm; box-sizing: border-box; }
+            @page { margin: 0; size: 57mm auto; }
         }
     </style>
 </head>
